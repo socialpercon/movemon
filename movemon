@@ -1,0 +1,43 @@
+#!/bin/bash
+
+MONITOR_SIZE=1920
+
+mouse_move() {
+	mouse_location=`/usr/bin/xdotool getmouselocation | awk '{print \$1}' | awk -F':' '{print \$2}'`
+	echo $mouse_location
+	if [ $mouse_location -gt 1920 ]
+	then
+		POS="-${MONITOR_SIZE} 0"
+	else
+		POS="${MONITOR_SIZE} 0"
+	fi
+	/usr/bin/xdotool mousemove_relative -- $POS
+	exit 0
+}
+
+window_move() {
+	windowfocus=`/usr/bin/xdotool getwindowfocus`
+	x_position=`xdotool getwindowgeometry $windowfocus | awk 'FNR ==2 {print $2}' | awk -F',' '{print $1}'`
+	echo ${x_position}
+	if [ ${x_position} -gt 1919 ]
+	then
+		POS="-${MONITOR_SIZE} 0"
+	else
+		POS="${MONITOR_SIZE} 0"
+	fi
+	/usr/bin/xdotool windowmove `/usr/bin/xdotool getwindowfocus` $POS
+	exit 0
+}
+
+case $1 in
+'mouse')
+	mouse_move
+	;;
+
+'window')
+	window_move
+	;;
+
+*)
+	echo 'Usage: $0 [mouse|window]';
+esac
