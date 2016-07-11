@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+
+import argparse
+import shutil
+import glob
+import os
+import sys
+import subprocess
+
+def look_folder(path):
+	abs_path = os.path.abspath(path)
+	file_list = glob.glob('{0}/*'.format(abs_path))
+	return file_list
+
+def apktojar(file_list, target_path):
+	target_dir = target_path
+	print "target_dir : {0}".format(target_dir)
+	if not os.path.exists(target_dir):
+		os.makedirs(target_dir)
+	for file_path in file_list:
+		file_dir = os.path.dirname(file_path)
+		full_file_name = os.path.basename(file_path)
+		#target_file = "{0}/{1}.jar".format(target_dir, file_name[0])
+		#dex_dir = os.path.join(file_dir,"target")
+                proc_command_list = ["convert","{0}/*.jpg".format(file_path),"{0}/{1}.pdf".format(target_dir, full_file_name)]
+                print proc_command_list
+
+		proc = subprocess.Popen(proc_command_list,
+			stderr=subprocess.PIPE, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+		proc.communicate()
+
+		#dex_path = os.path.join(dex_dir,"classes.dex")
+
+		#print "dex_path : {0}, target_file : {1}".format(dex_path, target_file)
+		#proc = subprocess.Popen(["d2j-dex2jar.sh",dex_path, "-o", target_file], 
+		#	stderr=subprocess.PIPE, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+		#proc.communicate()
+
+		#shutil.rmtree("{0}/target".format(file_dir), ignore_errors=True)
+
+
+def main(argv):
+	parser = argparse.ArgumentParser()
+	parser.add_argument('filedir', help='apk file dir')
+	parser.add_argument('targetdir', help='jar file dir')
+	args = parser.parse_args(argv)
+	file_dir = args.filedir
+	target_dir = args.targetdir
+	
+	file_list = look_folder(file_dir)
+	print "apk file list : {0}".format(", ".join(file_list))
+	apktojar(file_list, target_dir)
+	
+if __name__ == "__main__":
+	print "command : {0}".format(sys.argv[1:])
+	main(sys.argv[1:])

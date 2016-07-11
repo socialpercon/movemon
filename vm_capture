@@ -1,0 +1,35 @@
+#!/bin/bash
+#while [[ 1 ]] ; do
+#u
+until_loop=$1
+echo "loop to ${until_loop}"
+x_position=`/usr/bin/xdotool getmouselocation | awk '{print \$1}' | awk -F':' '{print \$2}'`
+y_position=`/usr/bin/xdotool getmouselocation | awk '{print \$2}' | awk -F':' '{print \$2}'`
+sleep .0$[ ( $RANDOM % 10 ) + 1 ]s
+NAME="shutter"
+#VM_NAME="567a9390-13e0-42ae-8f45-4d7942cdb28c"
+for((i=1;i<=${until_loop};i++))
+do
+	check=`ps axf | grep ${NAME} | grep -v grep | awk '{print $1 }'`
+	#check_vm=`ps axf | grep ${VM_NAME} | grep -v grep | awk '{print $1 }'`
+	#if [ -z "${check}" ] || [ -z "${check_vm}" ] ; then
+	if [ -z "${check}" ]; then
+		echo "${NAME} is stopped"
+		state=0
+		python send_noti.py
+		break
+	else
+		state=1
+		/usr/bin/xdotool mousemove 23 104
+		/usr/bin/xdotool click 1
+		#shutter -r
+		sleep 3
+		sleep .0$[ ( $RANDOM % 10 ) + 1 ]s
+	fi
+	/usr/bin/xdotool mousemove ${x_position} ${y_position}
+	/usr/bin/xdotool click 1
+	echo "capture $i in ${until_loop}"
+	sleep .0$[ ( $RANDOM % 10 ) + 1 ]s
+	sleep 2
+done
+python send_noti.py
